@@ -22,9 +22,9 @@ jobs:
       matrix:
          include:
            - environment: dev
-             runner: ubuntu-18.04
+             runner: ubuntu-20.04
            - environment: test
-             runner: ubuntu-18.04
+             runner: ubuntu-20.04
            - environment: prod
              runner: ubuntu-latest
     env:

@@ -22,21 +22,32 @@
  
 # Above lines from 12 - 21 commemted.use it later
 
-terraform {
-  required_version = ">= 0.12"
-  # Uncomment only if you would like to use s3 as backend
-  backend "s3" {
-    bucket = "mp-aws-cicd-terraform-backend-bucket"
-    key = "terraform.tfstate"
-    region = "us-west-2"
-  }
-}
+ module "ecs-fargate-service" {
+  // depends_on                = [module.vpc]
+   source                  = "./modules/ecs-fargate-service"
+   vpc_id                  = var.vpc_id
+   environment             = var.environment
+   project                 = var.project
+   region                  = var.aws_region
+   app_definitions         = local.app_definitions
+   health_check_path       = "/LoginWebApp-1/"
+ }
 
-provider "aws" {
-  region = var.aws_region
-  access_key = var.access_key
-  secret_key = var.secret_key
-}
+# terraform {
+#   required_version = ">= 0.12"
+#   # Uncomment only if you would like to use s3 as backend
+#   backend "s3" {
+#     bucket = "mp-aws-cicd-terraform-backend-bucket"
+#     key = "terraform.tfstate"
+#     region = "us-west-2"
+#   }
+# }
+
+# provider "aws" {
+#   region = var.aws_region
+#   access_key = var.access_key
+#   secret_key = var.secret_key
+# }
 
 resource "aws_codecommit_repository" "test" {
   repository_name = var.petclinic_project_repository_name
@@ -53,16 +64,6 @@ resource "aws_codecommit_repository" "test" {
 #   repository_name = var.golang_project_repository_name
 # }
 
- module "ecs-fargate-service" {
-  // depends_on                = [module.vpc]
-   source                  = "./modules/ecs-fargate-service"
-   vpc_id                  = var.vpc_id
-   environment             = var.environment
-   project                 = var.project
-   region                  = var.aws_region
-   app_definitions         = local.app_definitions
-   health_check_path       = "/LoginWebApp-1/"
- }
 
 resource "aws_iam_role" "containerAppBuildProjectRole" {
   name = "containerAppBuildProjectRole"
