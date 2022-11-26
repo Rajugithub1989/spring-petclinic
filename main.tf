@@ -182,7 +182,7 @@ resource "aws_codebuild_project" "containerAppBuild" {
   queued_timeout = 480
   service_role   = aws_iam_role.containerAppBuildProjectRole.arn
   tags = {
-    Environment = var.environment
+    environment = var.environment
   }
 
   artifacts {
@@ -443,7 +443,7 @@ resource "aws_iam_role_policy" "apps_codepipeline_role_policy" {
 }
 EOF
 }
-resource "aws_s3_bucket" "cicd_bucket" {
+resource "aws_s3_bucket_acl" "cicd_bucket-acl" {
   bucket = var.artifacts_bucket_name
   acl    = "private"
 }
@@ -451,7 +451,7 @@ resource "aws_codepipeline" "petclinic_pipeline" {
   name     = "petclinic_pipeline"
   role_arn = aws_iam_role.apps_codepipeline_role.arn
   tags = {
-    Environment = var.environment
+    environment = var.environment
   }
 
   artifact_store {
