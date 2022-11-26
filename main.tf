@@ -28,7 +28,7 @@
    vpc_id                  = var.vpc_id
    environment             = var.environment
    project                 = var.project
-   region                  = var.aws_region
+   region                  = var.region
    app_definitions         = local.app_definitions
    health_check_path       = "/LoginWebApp-1/"
  }
@@ -496,7 +496,7 @@ resource "aws_codepipeline" "petclinic_pipeline" {
             {
               name  = "AWS_DEFAULT_REGION"
               type  = "PLAINTEXT"
-              value = var.aws_region
+              value = var.region
             },
             {
               name  = "AWS_ACCOUNT_ID"

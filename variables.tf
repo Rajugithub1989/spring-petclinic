@@ -5,7 +5,7 @@
 # variable "vpc_id" { default = "vpc-072ecaa60abe662d4" }
 # variable "team" { default = "devops4solutions" }
 
-variable "aws_region" {
+variable "region" {
   description = "AWS region to launch servers."
   default     = "us-west-2"
 }

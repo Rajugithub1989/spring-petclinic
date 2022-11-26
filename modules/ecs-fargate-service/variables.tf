@@ -44,7 +44,7 @@ variable "project" {
   description = "Project, aka the application name"
 }
 
-variable "aws_region" {
+variable "region" {
   default     = ""
   description = "AWS region for resources"
 }
