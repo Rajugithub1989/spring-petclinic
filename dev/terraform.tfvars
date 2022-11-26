@@ -1,0 +1,6 @@
+environment = "dev"
+project     = "petclinic"
+platform = "Devops"
+vpc_id = "vpc-08ef93f588bc12a46"
+team = "DevSecOps"
+region ="us-west-2"
