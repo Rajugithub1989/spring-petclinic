@@ -1,0 +1,76 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: us-west-2 # checkfor specific region
+    AWS_ACCOUNT_ID: 723548398777
+    IMAGE_NAME: Petclinic
+    
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+      docker: 20  
+    commands:
+      - sudo yum remove awscli -y
+      - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      - unzip awscliv2.zip
+      - ls -l /root/.pyenv/shims/aws
+      - ./aws/install --bin-dir /root/.pyenv/shims --install-dir /usr/local/aws-cli --update
+      - aws --version
+      - cd /tmp/
+      - curl -OJL https://github.com/git-lfs/git-lfs/releases/download/v2.13.2/git-lfs-linux-amd64-v2.13.2.tar.gz
+      - tar xzf git-lfs-linux-amd64-v2.13.2.tar.gz
+      - ./install.sh
+      - cd $CODEBUILD_SRC_DIR
+      - git config --global --replace-all credential.helper '!aws.cmd codecommit credential-helper $@'
+      - git config --global --replace-all credential.UseHttpPath true
+      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
+      - sudo chmod 666 /var/run/docker.sock
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+  pre_build:
+    commands:
+      - git init
+      - mvn clean install
+      - echo $CODEBUILD_SRC_DIR
+      - echo Logging in to Amazon ECR.... 
+      - aws --version
+      - docker --version
+      - git --version
+      - echo Setting up docker
+      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com     
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker image build -t $IMAGE_NAME:latest .
+      - docker image tag $IMAGE_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest
+      - echo image name =  $IMAGE_NAME:latest
+      - echo image url = $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest
+      
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest
+      - echo Writing image definitions file...
+      - printf '{"ImageURI":"'"$AWS_ACCOUNT_ID"'.dkr.ecr.'"$AWS_REGION"'.amazonaws.com/'"$IMAGE_NAME"':latest"}' > imageDetail.json
+      - cat imageDetail.json
+      - echo Build completed on `date`
+artifacts:
+  files: 
+    - 'image*.json'
+    - 'appspec.yml'
+    - 'taskdef.json'
+  secondary-artifacts:
+    DefinitionArtifact:
+      files:
+        - appspec.yml
+        - taskdef.json
+    ImageArtifact:
+      files:
+        - imageDetail.json
