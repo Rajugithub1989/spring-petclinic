@@ -35,11 +35,11 @@ variable "vpc_id" {
 }
 variable "team" {
   description = "Targeted Depolyment environment"
-  default     = "vpc-072ecaa60abe662d4"
+  default     = "DevSecOps"
 }
 variable "petclinic_project_repository_name" {
   description = "Petclinic Project Repository name to connect to"
-  default     = "DevSecOps"
+  default     = "petclinic-repo"
 }
 variable "petclinic_project_repository_branch" {
   description = "Petclinic Project Repository branch to connect to"

@@ -38,6 +38,11 @@ provider "aws" {
   secret_key = var.secret_key
 }
 
+resource "aws_codecommit_repository" "test" {
+  repository_name = var.petclinic_project_repository_name
+  description     = "This is the Sample App Repository"
+}
+
 # data "aws_codecommit_repository" "nodeapp_repo" {
 #   repository_name = var.nodejs_project_repository_name
 # }
