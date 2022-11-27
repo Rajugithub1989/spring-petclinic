@@ -3,7 +3,7 @@
   load_balancer_type = "application"
   internal           = false
   #aws_subnets          = data.aws_subnet_ids.public.ids
-  subnets            = [for subnet in aws_subnet.public : subnet.id]
+  #subnets            = [for subnet in aws_subnet.public : subnet.id]
 
 
   security_groups = [aws_security_group.allow-internal.id, aws_security_group.allow-external1.id]
