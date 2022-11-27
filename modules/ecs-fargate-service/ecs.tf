@@ -4,7 +4,17 @@ resource "aws_ecs_cluster" "cluster" {
     name  = "containerInsights"
     value = "enabled"
   }
-  aws_ecs_cluster_capacity_providers = ["FARGATE", ]
+  #aws_ecs_cluster_capacity_providers = ["FARGATE","FARGATE_SPOT", ]
+}
+
+resource "aws_ecs_cluster_capacity_providers" "cluster" {
+  cluster_name = aws_ecs_cluster.cluster.name
+
+  capacity_providers = ["FARGATE"]
+
+  default_capacity_provider_strategy {
+    capacity_provider = "FARGATE"
+  }
 }
 
 resource "aws_ecs_service" "service" {
