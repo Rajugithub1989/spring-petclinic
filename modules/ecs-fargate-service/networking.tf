@@ -26,6 +26,16 @@ resource "aws_lb_target_group" "app" {
   }
 }
 
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_subnets" "all" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.selected.id]
+  }
+}
 /*resource "aws_lb_listener_rule" "app" {
   listener_arn = aws_lb_listener.lb_listener.arn
 
