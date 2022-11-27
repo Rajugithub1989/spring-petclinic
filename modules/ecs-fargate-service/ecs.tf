@@ -4,7 +4,7 @@ resource "aws_ecs_cluster" "cluster" {
     name  = "containerInsights"
     value = "enabled"
   }
-  capacity_providers = ["FARGATE", ]
+  aws_ecs_cluster_capacity_providers = ["FARGATE", ]
 }
 
 resource "aws_ecs_service" "service" {

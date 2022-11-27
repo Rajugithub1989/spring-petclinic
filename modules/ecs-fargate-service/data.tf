@@ -5,7 +5,15 @@ data "aws_vpc" "selected" {
 }
 
 data "aws_subnets" "public" {
- vpc_id = data.aws_vpc.selected.id
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.selected.id]
+  }
+  filter {
+    name   = "state"
+    values = ["available"]
+  }
+ #vpc_id = data.aws_vpc.selected.id
  tags = {
     Name = "*Public*"
   }
